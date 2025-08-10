@@ -28,15 +28,15 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const menuCollection = client.db('VelvetEmberDB').collection('menu');
-    // const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
+    const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
    app.get('/menu', async (req,res) =>{
     const result = await menuCollection.find().toArray();
     res.send(result)
    })
-//    app.get('/review', async(req,res) =>{
-//     const result = await reviewCollection.find().toArray();
-//     res.send(result)
-//    })
+   app.get('/review', async(req,res) =>{
+    const result = await reviewCollection.find().toArray();
+    res.send(result)
+   })
   } finally {
   }
 }
