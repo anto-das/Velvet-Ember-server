@@ -1,0 +1,47 @@
+const express = require('express');
+const app = express();
+const cors = require('cors');
+require('dotenv').config()
+const port = process.env.PORT || 4000
+const { MongoClient, ServerApiVersion } = require('mongodb');
+
+// middleware
+app.use(cors())
+app.use(express.json())
+
+
+app.get('/', (req,res) =>{
+    res.send('velvet ember open in soon')
+})
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.hojma.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    const menuCollection = client.db('VelvetEmberDB').collection('menu');
+    // const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
+   app.get('/menu', async (req,res) =>{
+    const result = await menuCollection.find().toArray();
+    res.send(result)
+   })
+//    app.get('/review', async(req,res) =>{
+//     const result = await reviewCollection.find().toArray();
+//     res.send(result)
+//    })
+  } finally {
+  }
+}
+run().catch(console.dir);
+
+app.listen(port , ()=>{
+    console.log(`velvet ember running on:${port}`)
+})
