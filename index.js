@@ -30,14 +30,21 @@ async function run() {
     const menuCollection = client.db('VelvetEmberDB').collection('menu');
     const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
     const cartCollection = client.db('VelvetEmberDB').collection('cart');
+    // menu collection
    app.get('/menu', async (req,res) =>{
     const result = await menuCollection.find().toArray();
     res.send(result)
    })
+  //  review collection
    app.get('/review', async(req,res) =>{
     const result = await reviewCollection.find().toArray();
     res.send(result)
    })
+  //  cart collection
+  app.get('/carts',async(req,res) =>{
+    const result = await cartCollection.find().toArray();
+    res.send(result)
+  })
    app.post('/carts', async(req,res) =>{
     const cartDoc = req.body;
     const result = await cartCollection.insertOne(cartDoc)
