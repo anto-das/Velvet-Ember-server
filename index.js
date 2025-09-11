@@ -27,20 +27,27 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    const userCollection = client.db('VelvetEmberDB').collection('users');
     const menuCollection = client.db('VelvetEmberDB').collection('menu');
     const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
     const cartCollection = client.db('VelvetEmberDB').collection('cart');
-    // menu collection
+    // user operation
+    app.post('/users', async (req,res) =>{
+      const user = req.body;
+      const result =await userCollection.insertOne(user)
+      res.send(result)
+    })
+    // menu operation
    app.get('/menu', async (req,res) =>{
     const result = await menuCollection.find().toArray();
     res.send(result)
    })
-  //  review collection
+  //  review operation
    app.get('/review', async(req,res) =>{
     const result = await reviewCollection.find().toArray();
     res.send(result)
    })
-  //  cart collection
+  //  cart review operation
   app.get('/carts',async(req,res) =>{
     const email = req.query.email;
     const query = {email:email}
