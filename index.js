@@ -32,8 +32,18 @@ async function run() {
     const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
     const cartCollection = client.db('VelvetEmberDB').collection('cart');
     // user operation
+    app.get('/users', async(req,res) =>{
+      const result = await userCollection.find().toArray();
+      res.send(result)
+    })
+
     app.post('/users', async (req,res) =>{
       const user = req.body;
+      const query = {email : user.email}
+      const existingEmail = await userCollection.findOne(query)
+      if(existingEmail){
+        return res.send({message:'this email is already exist'})
+      }
       const result =await userCollection.insertOne(user)
       res.send(result)
     })
