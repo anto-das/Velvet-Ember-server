@@ -40,8 +40,25 @@ async function run() {
       res.send({token})
     })
 
+    // midllewares
+    const verfiyToken = (req,res,next) =>{
+      // console.log(req.headers.authorization)
+      if(!req.headers.authorization){
+        return res.status(401).send('unauthorized access')
+      }
+      const token = req.headers.authorization.split(' ')[1]
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err,decoded) =>{
+        if(err){
+          return res.status(403).send('forbidden access')
+        }
+        req.decoded = decoded
+        next()
+      })
+    }
+
     // users operation
-    app.get('/users', async(req,res) =>{
+    app.get('/users',verfiyToken,async(req,res) =>{
+      // console.log(req.headers)
       const result = await userCollection.find().toArray();
       res.send(result)
     })
