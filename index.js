@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const port = process.env.PORT || 4000
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -31,7 +32,15 @@ async function run() {
     const menuCollection = client.db('VelvetEmberDB').collection('menu');
     const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
     const cartCollection = client.db('VelvetEmberDB').collection('cart');
-    // user operation
+
+    // jwt related operation
+    app.post('/jwt', async (req,res)=>{
+      const user = req.body;
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'2h'})
+      res.send({token})
+    })
+
+    // users operation
     app.get('/users', async(req,res) =>{
       const result = await userCollection.find().toArray();
       res.send(result)
@@ -45,6 +54,25 @@ async function run() {
         return res.send({message:'this email is already exist'})
       }
       const result =await userCollection.insertOne(user)
+      res.send(result)
+    })
+
+    app.patch('/users/admin/:id', async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const updatedDoc = {
+        $set:{
+          role:'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
+
+    app.delete('/users/:id', async(req,res) =>{
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const result = await userCollection.deleteOne(query)
       res.send(result)
     })
     // menu operation
