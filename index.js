@@ -42,7 +42,6 @@ async function run() {
 
     // midllewares
     const verfiyToken = (req,res,next) =>{
-      // console.log(req.headers.authorization)
       if(!req.headers.authorization){
         return res.status(401).send({message:'unauthorized access'})
       }
@@ -72,12 +71,11 @@ async function run() {
 
     // users operation
     app.get('/users',verfiyToken,verifyAdmin,async(req,res) =>{
-      // console.log(req.headers)
       const result = await userCollection.find().toArray();
       res.send(result)
     })
 
-    app.get('/users/admin/:email',verfiyToken,verifyAdmin, async(req,res) =>{
+    app.get('/users/admin/:email',verfiyToken,async(req,res) =>{
       const email = req.params.email;
       if(email !== req.decoded.email){
         return res.status(403).send({message: 'forbidden access'})
@@ -102,7 +100,7 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/users/admin/:id',verfiyToken, async(req,res)=>{
+    app.patch('/users/admin/:id',verfiyToken, verifyAdmin,async(req,res)=>{
       const id = req.params.id;
       const filter = {_id : new ObjectId(id)}
       const updatedDoc = {
@@ -142,7 +140,7 @@ async function run() {
     const result = await cartCollection.insertOne(cartDoc)
     res.send(result)
    })
-   app.delete('/carts/:id', async(req,res) =>{
+   app.delete('/carts/:id',verfiyToken, async(req,res) =>{
     const id = req.params.id;
     const query = { _id: new ObjectId(id) }
     const result = await cartCollection.deleteOne(query);
