@@ -112,7 +112,7 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('/users/:id',verfiyToken, async(req,res) =>{
+    app.delete('/users/:id',verfiyToken,verifyAdmin, async(req,res) =>{
       const id = req.params.id
       const query = {_id: new ObjectId(id)}
       const result = await userCollection.deleteOne(query)
@@ -123,6 +123,13 @@ async function run() {
     const result = await menuCollection.find().toArray();
     res.send(result)
    })
+
+   app.post('/menu',verfiyToken,verifyAdmin,async(req,res) =>{
+    const menuItem = req.body;
+    const result = await menuCollection.insertOne(menuItem)
+    res.send(result)
+   })
+
   //  review operation
    app.get('/review', async(req,res) =>{
     const result = await reviewCollection.find().toArray();
