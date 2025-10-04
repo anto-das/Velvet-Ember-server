@@ -41,7 +41,7 @@ async function run() {
     })
 
     // midllewares
-    const verfiyToken = (req,res,next) =>{
+    const verifyToken = (req,res,next) =>{
       if(!req.headers.authorization){
         return res.status(401).send({message:'unauthorized access'})
       }
@@ -70,12 +70,12 @@ async function run() {
     }
 
     // users operation
-    app.get('/users',verfiyToken,verifyAdmin,async(req,res) =>{
+    app.get('/users',verifyToken,verifyAdmin,async(req,res) =>{
       const result = await userCollection.find().toArray();
       res.send(result)
     })
 
-    app.get('/users/admin/:email',verfiyToken,async(req,res) =>{
+    app.get('/users/admin/:email',verifyToken,async(req,res) =>{
       const email = req.params.email;
       if(email !== req.decoded.email){
         return res.status(403).send({message: 'forbidden access'})
@@ -100,7 +100,7 @@ async function run() {
       res.send(result)
     })
 
-    app.patch('/users/admin/:id',verfiyToken, verifyAdmin,async(req,res)=>{
+    app.patch('/users/admin/:id',verifyToken, verifyAdmin,async(req,res)=>{
       const id = req.params.id;
       const filter = {_id : new ObjectId(id)}
       const updatedDoc = {
@@ -112,7 +112,7 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('/users/:id',verfiyToken,verifyAdmin, async(req,res) =>{
+    app.delete('/users/:id',verifyToken,verifyAdmin, async(req,res) =>{
       const id = req.params.id
       const query = {_id: new ObjectId(id)}
       const result = await userCollection.deleteOne(query)
@@ -131,7 +131,7 @@ async function run() {
     res.send(result)
    })
 
-   app.patch('/menu/:id',verfiyToken,verifyAdmin, async(req,res) =>{
+   app.patch('/menu/:id',verifyToken,verifyAdmin, async(req,res) =>{
     const id = req.params.id;
     const updatedItem = req.body;
     const filter = {_id: new ObjectId(id)}
@@ -148,13 +148,13 @@ async function run() {
     res.send(result)
    })
 
-   app.post('/menu',verfiyToken,verifyAdmin,async(req,res) =>{
+   app.post('/menu',verifyToken,verifyAdmin,async(req,res) =>{
     const menuItem = req.body;
     const result = await menuCollection.insertOne(menuItem)
     res.send(result)
    })
 
-   app.delete('/menu/:id', verfiyToken,verifyAdmin,async(req,res)=>{
+   app.delete('/menu/:id', verifyToken,verifyAdmin,async(req,res)=>{
     const id = req.params.id
     const query = {_id: new ObjectId(id)}
     const result = await menuCollection.deleteOne(query)
@@ -178,7 +178,7 @@ async function run() {
     const result = await cartCollection.insertOne(cartDoc)
     res.send(result)
    })
-   app.delete('/carts/:id',verfiyToken, async(req,res) =>{
+   app.delete('/carts/:id',verifyToken, async(req,res) =>{
     const id = req.params.id;
     const query = { _id: new ObjectId(id) }
     const result = await cartCollection.deleteOne(query);
