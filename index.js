@@ -33,6 +33,7 @@ async function run() {
     const menuCollection = client.db('VelvetEmberDB').collection('menu');
     const reviewCollection = client.db('VelvetEmberDB').collection('reviews');
     const cartCollection = client.db('VelvetEmberDB').collection('cart');
+    const paymentCollection = client.db('VelvetEmberDB').collection('payments');
 
     // jwt related operation
     app.post('/jwt', async (req,res)=>{
@@ -197,6 +198,16 @@ async function run() {
     res.send({
       clientSecret: paymentIntent.client_secret,
     })
+  })
+
+  app.post('/payments', async (req,res) =>{
+    const payment = req.body
+    const paymentResult = await paymentCollection.insertOne(payment)
+    const query={
+      _id:{ $in: payment.cartIds.map(id => new ObjectId(id))}
+    }
+    const deleteResult = await cartCollection.deleteMany(query)
+    res.send({paymentResult,deleteResult})
   })
 
   } finally {
