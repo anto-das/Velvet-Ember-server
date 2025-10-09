@@ -200,6 +200,13 @@ async function run() {
     })
   })
 
+  app.get('/payments/:email',verifyToken,async(req,res) =>{
+    const email = req.params.email
+    const query ={email:email}
+    const result = await paymentCollection.find(query).toArray()
+    res.send(result)
+  })
+
   app.post('/payments', async (req,res) =>{
     const payment = req.body
     const paymentResult = await paymentCollection.insertOne(payment)
@@ -209,7 +216,6 @@ async function run() {
     const deleteResult = await cartCollection.deleteMany(query)
     res.send({paymentResult,deleteResult})
   })
-
   } finally {
   }
 }
