@@ -217,7 +217,35 @@ async function run() {
     res.send({paymentResult,deleteResult})
   })
 
-  // stats api 
+  // orders-stats api
+  app.get('/orders-stats', async(req,res) =>{
+    const result = await paymentCollection.aggregate([
+      {
+        $unwind:'$menuIds'
+      },
+      {
+        $lookup:{
+          from:'menu',
+          localField:'menuIds',
+          foreignField:'_id',
+          as:'menuItems'
+        }
+      },
+      {
+        $unwind:'$menuItems'
+      },
+      {
+        $group:{
+          _id:'$menuItems.category',
+          quantity:{$sum:1},
+          revenue:{$sum:'$menuItems.price'}
+        }
+      }
+    ]).toArray()
+    res.send(result)
+  })
+
+  // admin-stats api 
   app.get('/admin-stats',verifyToken,verifyAdmin, async(req,res) =>{
     const users = await userCollection.estimatedDocumentCount()
     const menuItems = await menuCollection.estimatedDocumentCount()
