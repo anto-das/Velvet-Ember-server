@@ -218,7 +218,7 @@ async function run() {
   })
 
   // orders-stats api
-  app.get('/orders-stats', async(req,res) =>{
+  app.get('/orders-stats',verifyToken,verifyAdmin, async(req,res) =>{
     const result = await paymentCollection.aggregate([
       {
         $unwind:'$menuIds'
