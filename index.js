@@ -167,6 +167,11 @@ async function run() {
     const result = await reviewCollection.find().toArray();
     res.send(result)
    })
+   app.post('/review',verifyToken,async(req,res) =>{
+    const review = req.body
+    const result =await reviewCollection.insertOne(review)
+    res.send(result)
+   })
   //  cart review operation
   app.get('/carts',async(req,res) =>{
     const email = req.query.email;
@@ -210,7 +215,6 @@ async function run() {
     const result = await paymentCollection.find(query).toArray()
     res.send(result)
   })
-
   app.post('/payments', verifyToken, async (req,res) =>{
     const payment = req.body
     const paidPayment ={...payment,status:'paid'}
