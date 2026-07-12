@@ -187,6 +187,31 @@ async function run() {
       const result = await cartCollection.find(query).toArray();
       res.send(result);
     });
+    app.get("/cart/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+
+        // ১. আইডিটি মঙ্গোডিবির ভ্যালিড ObjectId কিনা তা চেক করা (সুরক্ষার জন্য)
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).send({ message: "Invalid ID format" });
+        }
+
+        // ২. স্ট্রিং আইডিকে ObjectId-তে কনভার্ট করে কুয়েরি করা
+        const query = { _id: new ObjectId(id) };
+        console.log("Querying cart item with ID:", query); // লগিং
+        const result = await cartCollection.findOne(query);
+
+        if (!result) {
+          return res.status(404).send({ message: "Cart item not found" });
+        }
+
+        res.send(result);
+      } catch (error) {
+        res
+          .status(500)
+          .send({ message: "Internal server error", error: error.message });
+      }
+    });
     app.post("/carts", async (req, res) => {
       const cartDoc = req.body;
       const result = await cartCollection.insertOne(cartDoc);
